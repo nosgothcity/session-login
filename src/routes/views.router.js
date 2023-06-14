@@ -140,7 +140,7 @@ router.get('/productsList', privateRoute, async (req, res) => {
         products.prevPage = null;
         products.nextPage = null;
     }
-    console.log('req.session.user', req.session.user);
+
     res.render('productsList', {
         products: products.payload,
         hasNextPage: products.hasNextPage,
