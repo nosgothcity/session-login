@@ -1,0 +1,40 @@
+<div class="container p-4">
+    <div class="row justify-content-center align-items-center">
+        <div class="col-md4 mx-auto">
+            <h2>Datos De Usuario</h2>
+                <table class="table" >
+                    <thead>
+                        <tr>
+                            <th scope="col">Nombre</th>
+                            <th scope="col">Apellido</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Edad</th>
+                        </tr>
+                    </thead>
+                    <tbody id="result-rows">
+                        <tr>
+                            <td>{{firstname}}</td>
+                            <td>{{lastname}}</td>
+                            <td>{{email}}</td>
+                            <td>{{age}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <nav aria-label="Page navigation">
+                    
+                    <ul class="pagination">
+                        <div>
+                            <a href="http://localhost:3000/productsList">
+                                <button type="button" class="btn btn-success">Lista De Productos</button>
+                            </a>
+                        </div>
+                        <div>
+                            <a href="http://localhost:3000/logout">
+                                <button type="button" class="btn btn-danger">Cerrar Sesión</button>
+                            </a>
+                        </div>
+                    </ul>
+                </nav>
+        </div>
+    </div>
+</div>
