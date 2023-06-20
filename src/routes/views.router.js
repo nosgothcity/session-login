@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import UserModel from '../models/user.model.js';
 import ProductModel from '../models/products.model.js';
+import passport from 'passport';
 
 const router = Router();
 
@@ -46,45 +47,27 @@ router.get('/', publicRoute, (req,res)=>{
     res.render('home', { title: "Express" })
 })
 
-router.post('/register', publicRoute, async (req,res)=>{
-    const { firstname, lastname, email, age, password } = req.body;
-    
-    const userEx = await UserModel.findOne({email});
-    if( userEx ) {
-        console.error('Usuario ya registrado');
-        res.redirect('/');
-    }
-    try {
-        const admin = true;
-        const user = new UserModel({ firstname, lastname, email, age, password, admin });
-        await user.save();
-        res.redirect('/login');
-    } catch (error) {
-        console.error('Error al registrar el usuario:', error);
-        res.redirect('/');
-    }
-});
+router.post('/register', 
+    passport.authenticate('register', {
+        successRedirect: '/login',
+        failureRedirect: '/',
+        failureFlash: true,
+    }),
+);
 
 router.get('/login', publicRoute, (req, res) => {
     res.render('login');
 });
 
-router.post('/login', publicRoute, async (req, res) => {
-    const { email, password } = req.body;
-
-    try {
-        const user = await UserModel.findOne({ email, password });
-        if (!user) {
-            res.redirect('/login');
-        } else {
-            req.session.user = user;
-            res.redirect('/productsList');
+router.post('/login',
+    passport.authenticate('login', {failureRedirect: '/login',}), async (req, res) => {
+        if(!req.user){
+            return res.status(400).send({status: "error", error: "Credenciales incorrectas"});
         }
-    } catch (error) {
-        console.error('Error al iniciar sesión:', error);
-        res.redirect('/login');
+        req.session.user = req.user;
+        res.redirect('/profile');
     }
-});
+);
 
 router.get('/profile', privateRoute, (req, res) => {
     if (!req.session.user) {
