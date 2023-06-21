@@ -1,9 +1,39 @@
 import passport from 'passport';
+import GitHubStrategy from 'passport-github2';
 import { Strategy as LocalStrategy } from 'passport-local';
 import { createHash, isValidPassword } from '../utils.js';
 import UserModel from '../models/user.model.js';
 
 const initializePassport = () => {
+    passport.use('github', new GitHubStrategy({
+        clientID:'Iv1.f575c2538022b7b3',
+        clientSecret:'88f403d5bba84d5ee876b0e088b401f6bb214c24',
+        callbackURL:'http://localhost:8080/api/sessions/githubcallback',
+    },
+        async (accessToken, refreshToken, profile, done) => {
+            try {
+                console.log(profile);
+                const user = await UserModel.findOne({ email: profile._json.email });
+                if (!user) {
+                    const newUser = {
+                        firstname: profile._json.name,
+                        lastname: '', 
+                        email: profile._json.email, 
+                        age: 30,
+                        password: '',
+                        admin: false,
+                    };
+                    const result = await UserModel.create(newUser);
+                    done(null, result);
+                } else {
+                    done(null, user);
+                }
+            } catch (error) {
+                return done(error);
+            }
+        }
+    ));
+
     passport.use('register', new LocalStrategy({ passReqToCallback: true, usernameField: 'email' },
         async (req, username, password, done) => {
             const {firstname, lastname, age} = req.body
@@ -53,7 +83,7 @@ const initializePassport = () => {
                 return done(error);
             }
         }
-        ));
+    ));
 
     passport.serializeUser((user, done) => {
         done(null, user.id);
@@ -61,10 +91,10 @@ const initializePassport = () => {
 
     passport.deserializeUser(async (id, done) => {
         try {
-        const user = await UserModel.findById(id);
-        done(null, user);
+            const user = await UserModel.findById(id);
+            done(null, user);
         } catch (error) {
-        done(error);
+            done(error);
         }
     });
 };

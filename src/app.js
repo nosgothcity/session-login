@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import handlebars from 'express-handlebars';
 import __dirname from './utils.js';
 import viewsRouter from './routes/views.router.js';
+import sessionsRouter from './routes/session.router.js';
 import session from 'express-session';
 import passport from 'passport';
 import initializePassport from './config/passport.config.js'
@@ -30,4 +31,6 @@ app.use(passport.session());
 app.use(flash());
 
 app.use('/', viewsRouter);
+app.use('/api/sessions', sessionsRouter);
+
 app.listen(8080, () => console.log("Listening on PORT 8080"));
